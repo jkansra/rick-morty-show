@@ -1,0 +1,19 @@
+.badge {
+  background-color: #706e6b;
+  color: #fff;
+  padding: 0.5rem 0.25rem;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.8rem;
+}
+.badge__text {
+  margin-right: 0.5rem;
+  max-width: 5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge__icon {
+  cursor: pointer;
+}
