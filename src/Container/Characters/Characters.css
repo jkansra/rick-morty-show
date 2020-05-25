@@ -11,6 +11,7 @@
 .container {
   padding: 1rem 0.8rem;
   display: flex;
+  font-family: cursive;
 }
 .container__filters {
   width: 15%;
@@ -46,7 +47,30 @@
 
 @media (max-width: 768px) {
   .container__content__characters .card {
-    /* width: 20%; */
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+}
+@media (max-width: 481px) {
+  .container,
+  .container__content__search__sort {
+    display: block;
+  }
+  .container__filters,
+  .container__content {
+    width: auto;
+  }
+  .container__content__search {
+    margin: 0.5rem 0;
+  }
+  .container__content__search .input {
+    width: 94%;
+  }
+  .container__content__sort .select {
+    width: 100%;
+  }
+  .container__content__characters .card {
+    width: 50%;
     display: inline-block;
     margin-bottom: 1rem;
   }

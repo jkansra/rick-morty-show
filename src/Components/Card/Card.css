@@ -53,3 +53,27 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+@media (max-width: 768px) {
+  .card__header__image {
+    max-width: 9rem;
+  }
+  .card__header__heading {
+    max-width: 8rem;
+  }
+  .card__header__heading__name {
+    font-size: 1rem;
+  }
+  .card__content {
+    max-width: 7rem;
+  }
+}
+@media (max-width: 481px) {
+  .container__content__characters .card {
+    width: 50%;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .card__header__image {
+    max-width: 11rem;
+  }
+}

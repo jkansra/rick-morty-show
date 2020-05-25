@@ -67,7 +67,7 @@ class Characters extends React.Component {
     });
     return [...new Set(uniqueFilter)];
   };
-  //   On clicking filter checkbox
+  //   Event onChange filter checkbox
   handleFilter = (event, type) => {
     let value = event.target.value;
     let id = event.target.id;
@@ -107,8 +107,20 @@ class Characters extends React.Component {
       // To display unique results
       result = [...new Set(result)];
     }
-    this.setState({ results: appliedFilter.length ? result : syncedData });
+    // Logic to sort results after applying filters
+    let sortedResult = [];
+    if (appliedFilter.length > 0) {
+      if (sortOrder === "desc") {
+        sortedResult = result.sort((a, b) => b.id - a.id);
+      } else {
+        sortedResult = result.sort((a, b) => a.id - b.id);
+      }
+    }
+    this.setState({
+      results: appliedFilter.length ? sortedResult : syncedData,
+    });
   };
+  //   Event called on Search input change
   handleSearch = (event) => {
     const searchString = event.target.value;
     if (this.state.appliedFilter.length) {
@@ -121,6 +133,7 @@ class Characters extends React.Component {
       this.setState({ searchString: searchString, results: filterData });
     }
   };
+  //   Event called on Sort selection change
   handleSort = (event) => {
     const sortValue = event.target.value;
     if (this.state.appliedFilter.length) {
@@ -146,9 +159,11 @@ class Characters extends React.Component {
     if (sortOrder === "desc") return filterData.reverse();
     else return filterData.sort();
   };
+  // Event onClick of Selected-Filter close icon
   removeFilter = (filterId) => {
     this.handleFilter({ target: { id: filterId } });
   };
+  //   To render checkboxes checked/unchecked after removing Selected-Filter
   isFilterChecked = (filterId) => {
     let index = this.state.appliedFilter.findIndex(
       (item) => item.id === filterId
