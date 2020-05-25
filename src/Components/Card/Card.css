@@ -48,7 +48,7 @@
 }
 .card__content__data__value {
   color: sandybrown;
-  max-width: 5rem;
+  max-width: 7rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

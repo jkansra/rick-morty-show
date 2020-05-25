@@ -2,7 +2,6 @@ import React from "react";
 import "./Characters.css";
 import loader from "../../loader.gif";
 import Badge from "../../Components/Badge/Badge";
-import Button from "../../Components/Button/Button";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import Card from "../../Components/Card/Card";
 import Input from "../../Components/Input/Input";
@@ -61,13 +60,15 @@ class Characters extends React.Component {
         }
       });
   }
+  //   Fetch filter list to be displayed
   getUniqueFilters = (array, parentKey, childrenKey) => {
     const uniqueFilter = array.map((item) => {
       return childrenKey ? item[parentKey][childrenKey] : item[parentKey];
     });
     return [...new Set(uniqueFilter)];
   };
-  handleFilter = (event) => {
+  //   On clicking filter checkbox
+  handleFilter = (event, type) => {
     let value = event.target.value;
     let id = event.target.id;
     const appliedFilterData = [...this.state.appliedFilter];
@@ -80,59 +81,79 @@ class Characters extends React.Component {
       appliedFilterData.push({
         label: value,
         id: id,
+        type: type,
       });
     }
     this.setState({ appliedFilter: appliedFilterData }, () =>
       this.applyFilters()
     );
   };
+  //   Apply filters after checking results of searched and sorted data
   applyFilters = () => {
-    const { appliedFilter } = this.state;
+    const { appliedFilter, searchString, sortOrder } = this.state;
     let result = [];
-    console.log(appliedFilter);
-    if (appliedFilter && appliedFilter.length > 0) {
-      for (let i = 0; i < resultData.length; i++) {
-        for (let j = 0; j < appliedFilter.length; j++) {
-          let id = this.getSubstringFromId(appliedFilter[j].id);
-          if (resultData[i][id] === appliedFilter[j].label) {
-            result.push(resultData[i]);
-          }
-        }
-      }
-      this.setState({ results: result });
-    } else {
-      this.setState({ results: resultData });
+    let syncedData = [...resultData];
+    if (searchString || sortOrder) {
+      syncedData = this.syncFilterData(searchString, sortOrder);
     }
+    for (let i = 0; i < appliedFilter.length; i++) {
+      let data = syncedData.filter((item) => {
+        return (
+          appliedFilter[i]["label"] === item[appliedFilter[i]["type"]] ||
+          appliedFilter[i]["label"] === item[appliedFilter[i]["type"]].name
+        );
+      });
+      result = [...result, ...data];
+      // To display unique results
+      result = [...new Set(result)];
+    }
+    this.setState({ results: appliedFilter.length ? result : syncedData });
   };
-  getSubstringFromId = (id) => id.substring(0, id.indexOf("-"));
   handleSearch = (event) => {
     const searchString = event.target.value;
-    const filterData = this.syncFilterData(searchString, this.state.sortOrder);
-    this.setState({ results: filterData, searchString: searchString });
+    if (this.state.appliedFilter.length) {
+      this.setState({ searchString: searchString }, () => this.applyFilters());
+    } else {
+      const filterData = this.syncFilterData(
+        searchString,
+        this.state.sortOrder
+      );
+      this.setState({ searchString: searchString, results: filterData });
+    }
   };
   handleSort = (event) => {
     const sortValue = event.target.value;
-    const filterData = this.syncFilterData(this.state.searchString, sortValue);
-    this.setState({
-      results: filterData,
-      sortOrder: sortValue,
-    });
+    if (this.state.appliedFilter.length) {
+      this.setState(
+        {
+          sortOrder: sortValue,
+        },
+        () => this.applyFilters()
+      );
+    } else {
+      const filterData = this.syncFilterData(
+        this.state.searchString,
+        sortValue
+      );
+      this.setState({ sortOrder: sortValue, results: filterData });
+    }
   };
+  //   keep searched and sorted data in Sync
   syncFilterData = (searchString, sortOrder) => {
-    // const { results, appliedFilter } = this.state;
-    // let displayData = [];
-    // if (appliedFilter.length > 0) {
-    //   displayData = results;
-    // } else {
-    //   displayData = [...resultData];
-    // }
-    // console.log("display data", displayData);
     let filterData = resultData.filter((item) =>
       item.name.toUpperCase().includes(searchString.toUpperCase())
     );
     if (sortOrder === "desc") return filterData.reverse();
-    else if (sortOrder === "asc") return filterData.sort();
-    else return filterData;
+    else return filterData.sort();
+  };
+  removeFilter = (filterId) => {
+    this.handleFilter({ target: { id: filterId } });
+  };
+  isFilterChecked = (filterId) => {
+    let index = this.state.appliedFilter.findIndex(
+      (item) => item.id === filterId
+    );
+    return index > -1 ? true : false;
   };
   render() {
     const { filters, results, appliedFilter, isLoading } = this.state;
@@ -151,8 +172,11 @@ class Characters extends React.Component {
                 <Checkbox
                   label={item}
                   id={`species-${item}`}
-                  handleCheckbox={this.handleFilter}
+                  handleCheckbox={(event) =>
+                    this.handleFilter(event, "species")
+                  }
                   key={`species-${item}`}
+                  isChecked={this.isFilterChecked(`species-${item}`)}
                 />
               );
             })}
@@ -164,8 +188,9 @@ class Characters extends React.Component {
                 <Checkbox
                   label={item}
                   id={`gender-${item}`}
-                  handleCheckbox={this.handleFilter}
+                  handleCheckbox={(event) => this.handleFilter(event, "gender")}
                   key={`gender-${item}`}
+                  isChecked={this.isFilterChecked(`gender-${item}`)}
                 />
               );
             })}
@@ -177,8 +202,9 @@ class Characters extends React.Component {
                 <Checkbox
                   label={item}
                   id={`origin-${item}`}
-                  handleCheckbox={this.handleFilter}
+                  handleCheckbox={(event) => this.handleFilter(event, "origin")}
                   key={`origin-${item}`}
+                  isChecked={this.isFilterChecked(`origin-${item}`)}
                 />
               );
             })}
@@ -193,7 +219,12 @@ class Characters extends React.Component {
                 Selected Filters
               </h1>
               {appliedFilter.map((item, key) => (
-                <Badge text={item.label} icon="fa-times" key={key} />
+                <Badge
+                  text={item.label}
+                  icon="fa-times"
+                  key={key}
+                  handleClick={() => this.removeFilter(item.id)}
+                />
               ))}
             </div>
           ) : null}

@@ -9,6 +9,7 @@ const Checkbox = (props) => {
         onChange={props.handleCheckbox}
         id={props.id}
         value={props.label}
+        checked={props.isChecked}
       />
       <label htmlFor={props.id} className="checkbox__label">
         {props.label}

@@ -7,7 +7,7 @@ const Badge = (props) => {
       <span className="badge__text" title={props.text}>
         {props.text}
       </span>
-      <span className="badge__icon">
+      <span className="badge__icon" onClick={props.handleClick}>
         <i className={`fa ${props.icon} fa-lg`}></i>
       </span>
     </div>

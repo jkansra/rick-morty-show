@@ -1,3 +1,6 @@
+.checkbox {
+  margin-bottom: 0.5rem;
+}
 .checkbox__label {
   cursor: pointer;
 }
