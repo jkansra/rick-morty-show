@@ -1,7 +1,18 @@
 .checkbox {
   margin-bottom: 0.5rem;
   display: flex;
+  align-items: center;
 }
 .checkbox__label {
   cursor: pointer;
+}
+@media (max-width: 768px) {
+  .checkbox__label {
+    font-size: 0.7rem;
+  }
+}
+@media (max-width: 481px) {
+  .checkbox__label {
+    font-size: 1rem;
+  }
 }

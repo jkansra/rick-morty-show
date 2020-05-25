@@ -244,7 +244,7 @@ class Characters extends React.Component {
             </div>
           ) : null}
           {/* SEARCH AND SORT */}
-          <div className="container__content__search__sort container__filters--mbs">
+          <div className="container__content__search__sort container__filters--mbl">
             <div className="container__content__search">
               <Input
                 name="search"
